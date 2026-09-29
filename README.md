@@ -33,6 +33,10 @@
 ./start_web.sh [端口]   # 后台运行，日志 web.log，进程号 web.pid（以后部署到服务器用）
 ```
 
+**Mac 上像 App 一样用**：`./tools/make_mac_app.sh` 会在 `~/Applications` 生成「十二音指板 Guitar12.app」，按 Command + 空格搜「十二音」或「Guitar12」就能打开。它会在后台启动服务（已经在运行就跳过），再用 Chrome 独立窗口打开。停掉后台服务：`kill $(cat web.pid)`。
+
+**图标**：十二音圆环（12 个点围成一圈，do / mi / so 连成大三和弦三角形）。改设计就改 `tools/icon_svg.py`，再运行 `./tools/make_icons.sh` 和 `./tools/make_mac_app.sh`。网页也带了 manifest，在 Chrome / 手机浏览器里可以「安装」或「添加到主屏幕」。
+
 麦克风只能在 `localhost` 或 `https` 下使用。现在不接后端：练习数据只存在浏览器本地，服务器只提供页面和 `/api/health`。
 
 ## 技术说明

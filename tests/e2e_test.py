@@ -87,7 +87,11 @@ def run():
 
         js = lambda code: pg.evaluate(code)
         check('指板有 6 × 13 个可点位置', pg.locator('rect.hit').count() == 78)
-        check('页脚显示版本号（来自 Flask 模板）', 'v1.1' in pg.inner_text('#build'))
+        check('页脚显示版本号（来自 Flask 模板）', pg.inner_text('#build').startswith('v1.'))
+        mf = js('fetch("/manifest.webmanifest").then(r => r.ok && r.headers.get("content-type").includes("manifest") ? r.json() : null)')
+        check('manifest 可访问，名字和图标齐全', bool(mf) and mf['name'] == '十二音指板' and len(mf['icons']) >= 3)
+        icons_ok = js('Promise.all(["icon.svg","icon-192.png","icon-512.png","icon-maskable-512.png","apple-touch-icon.png"].map(f => fetch("/static/icons/" + f).then(r => r.ok))).then(a => a.every(Boolean))')
+        check('所有图标文件都能加载', icons_ok)
         check('页面上没有字母音名', not any(x in pg.inner_text('body') for x in [' C ', ' D ', ' E ', ' F ', ' G ', ' A ', ' B ']))
 
         # 听音找位：点对的位置

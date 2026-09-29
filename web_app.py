@@ -5,9 +5,9 @@
 """
 import argparse
 
-from flask import Flask, jsonify, render_template
+from flask import Flask, jsonify, render_template, send_from_directory
 
-BUILD = "v1.1 · 2026-09-29"
+BUILD = "v1.2 · 2026-09-29"
 
 app = Flask(__name__)
 
@@ -15,6 +15,12 @@ app = Flask(__name__)
 @app.route("/")
 def index():
     return render_template("index.html", build=BUILD)
+
+
+@app.route("/manifest.webmanifest")
+def manifest():
+    # 放在根路径，安装成 App 后的作用范围才是整个站点
+    return send_from_directory(app.static_folder, "manifest.webmanifest", mimetype="application/manifest+json")
 
 
 @app.route("/api/health")
