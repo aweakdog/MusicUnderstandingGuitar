@@ -26,31 +26,36 @@
 
 ## 运行
 
+和 go_value_analyzer 一样是 Flask 应用（同样固定 Flask 3.1.3）。第一次运行会自动建 `.venv` 并装依赖。
+
 ```bash
-./start.sh        # 打开 http://localhost:8712
+./start.sh              # 本地前台运行，自动打开 http://localhost:8712
+./start_web.sh [端口]   # 后台运行，日志 web.log，进程号 web.pid（以后部署到服务器用）
 ```
 
-麦克风只能在 `localhost` 或 `https` 下使用。纯前端，没有构建步骤，也不需要后端。
+麦克风只能在 `localhost` 或 `https` 下使用。现在不接后端：练习数据只存在浏览器本地，服务器只提供页面和 `/api/health`。
 
 ## 技术说明
 
-- `js/theory.js`：12 音编号、指板映射、频率换算（纯函数）
-- `js/synth.js`：Karplus-Strong 拨弦合成，用全通滤波补小数延迟，全指板音准误差小于 5 音分
-- `js/pitch.js`：YIN 音高检测
-- `js/audio.js`：播放和麦克风
-- `js/fretboard.js`：SVG 指板（1 弦在上、6 弦在下）
-- `js/stats.js`：每个位置的答题统计、加权出题
-- `js/store.js`：存储层，现在存浏览器 localStorage
-- `js/app.js`：各练习模式
+- `web_app.py`：Flask 应用，提供页面；以后在这里加账号和数据同步接口
+- `templates/index.html`：页面
+- `static/js/theory.js`：12 音编号、指板映射、频率换算（纯函数）
+- `static/js/synth.js`：Karplus-Strong 拨弦合成，用全通滤波补小数延迟，全指板音准误差小于 5 音分
+- `static/js/pitch.js`：YIN 音高检测
+- `static/js/audio.js`：播放和麦克风
+- `static/js/fretboard.js`：SVG 指板（1 弦在上、6 弦在下）
+- `static/js/stats.js`：每个位置的答题统计、加权出题
+- `static/js/store.js`：存储层，现在存浏览器 localStorage
+- `static/js/app.js`：各练习模式
 
 ## 测试
 
 ```bash
 npm test                          # 单元测试：编号、频率、合成音准、音高检测、统计
-python3 tests/e2e_test.py [截图目录]  # 浏览器端到端测试（需要 playwright 和本机 Chrome，含假麦克风唱音测试）
+python3 tests/e2e_test.py [截图目录]  # 浏览器端到端测试：自动启动 Flask，需要 playwright 和本机 Chrome，含假麦克风唱音测试
 ```
 
 ## 以后要做
 
-- **上线后端**：部署到服务器，数据同步到账号里、换设备也在。存储层已经留好接口：在 `js/store.js` 实现一个同样有 `load` / `save` 的 `RemoteStore` 替换 `LocalStore` 即可。
+- **上线后端**：部署到服务器，数据同步到账号里、换设备也在。前端存储层已经留好接口：在 `static/js/store.js` 实现一个同样有 `load` / `save` 的 `RemoteStore` 替换 `LocalStore`，后端在 `web_app.py` 加对应的接口即可。
 - 手机上用麦克风需要 https。

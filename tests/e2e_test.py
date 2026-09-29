@@ -1,16 +1,17 @@
-"""浏览器端到端测试：用本机 Chrome（Playwright）点一遍所有模式，并用假麦克风（196Hz 正弦 = so）测唱音判定。
+"""浏览器端到端测试：启动 Flask 应用，用本机 Chrome（Playwright）点一遍所有模式，并用假麦克风（196Hz 正弦 = so）测唱音判定。
 
-依赖：pip install playwright；本机装有 Google Chrome。
+依赖：pip install playwright；本机装有 Google Chrome；项目 .venv 里装好 requirements.txt。
 用法：python3 tests/e2e_test.py [截图输出目录]
 """
-import functools
-import http.server
+import json
 import math
 import os
 import struct
+import subprocess
 import sys
 import tempfile
-import threading
+import time
+import urllib.request
 import wave
 
 from playwright.sync_api import sync_playwright
@@ -20,15 +21,19 @@ SHOTS = sys.argv[1] if len(sys.argv) > 1 else None
 PORT = 8719
 
 
-class Quiet(http.server.SimpleHTTPRequestHandler):
-    def log_message(self, *a):
-        pass
-
-
 def serve():
-    s = http.server.ThreadingHTTPServer(('127.0.0.1', PORT), functools.partial(Quiet, directory=ROOT))
-    threading.Thread(target=s.serve_forever, daemon=True).start()
-    return s
+    py = os.path.join(ROOT, '.venv', 'bin', 'python')
+    proc = subprocess.Popen([py, 'web_app.py', '--port', str(PORT)], cwd=ROOT, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    for _ in range(50):
+        try:
+            with urllib.request.urlopen(f'http://127.0.0.1:{PORT}/api/health', timeout=1) as r:
+                info = json.load(r)
+                print('Flask 已启动：', info)
+                return proc
+        except Exception:
+            time.sleep(0.2)
+    proc.kill()
+    raise RuntimeError('Flask 没有启动起来')
 
 
 def sine_wav(path, freq=196.0, seconds=6, sr=48000):
@@ -41,7 +46,14 @@ def sine_wav(path, freq=196.0, seconds=6, sr=48000):
 
 
 def main():
-    serve()
+    server = serve()
+    try:
+        run()
+    finally:
+        server.terminate()
+
+
+def run():
     wav = os.path.join(tempfile.mkdtemp(), 'so.wav')
     sine_wav(wav)
     errors = []
@@ -61,7 +73,7 @@ def main():
         pg = ctx.new_page()
         pg.on('pageerror', lambda e: errors.append(str(e)))
         pg.on('console', lambda m: m.type == 'error' and errors.append(m.text))
-        pg.goto(f'http://127.0.0.1:{PORT}/index.html')
+        pg.goto(f'http://127.0.0.1:{PORT}/')
         pg.evaluate('localStorage.clear()')
         pg.reload()
         pg.wait_for_function('window.guitar12 !== undefined')
@@ -75,6 +87,7 @@ def main():
 
         js = lambda code: pg.evaluate(code)
         check('指板有 6 × 13 个可点位置', pg.locator('rect.hit').count() == 78)
+        check('页脚显示版本号（来自 Flask 模板）', 'v1.1' in pg.inner_text('#build'))
         check('页面上没有字母音名', not any(x in pg.inner_text('body') for x in [' C ', ' D ', ' E ', ' F ', ' G ', ' A ', ' B ']))
 
         # 听音找位：点对的位置

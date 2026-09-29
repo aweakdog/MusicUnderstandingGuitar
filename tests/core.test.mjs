@@ -1,8 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { OPEN, pc, pitchAt, syllable, freqOf, nOfFreq, nearestOfClass, positions, matchingPositions, labelOf } from '../js/theory.js';
-import { pluck } from '../js/synth.js';
-import { detectPitch } from '../js/pitch.js';
+import { OPEN, pc, pitchAt, syllable, freqOf, nOfFreq, nearestOfClass, positions, matchingPositions, labelOf } from '../static/js/theory.js';
+import { pluck } from '../static/js/synth.js';
+import { detectPitch } from '../static/js/pitch.js';
 
 test('空弦编号：相邻弦差 5，只有 3→2 弦差 4', () => {
   assert.deepEqual(OPEN.slice(1), [28, 23, 19, 14, 9, 4]);

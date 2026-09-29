@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { Stats } from '../js/stats.js';
+import { Stats } from '../static/js/stats.js';
 
 class MemStore {
   constructor() { this.m = {}; }

@@ -4,7 +4,7 @@ import { Audio, Mic } from './audio.js';
 import { Stats } from './stats.js';
 import { store } from './store.js';
 
-const BUILD = 'v1 · 2026-09-29';
+const BUILD = document.body.dataset.build || '';
 const $ = (id) => document.getElementById(id);
 const now = () => performance.now();
 const secs = (ms) => (ms / 1000).toFixed(1);
