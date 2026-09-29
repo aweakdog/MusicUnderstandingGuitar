@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>十二音指板</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230f766e'/%3E%3Ctext x='32' y='43' font-size='30' text-anchor='middle' fill='white' font-family='sans-serif' font-weight='700'%3E12%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <div class="brand">十二音指板<span class="sub">用 12 音系统练吉他指板</span></div>
+  <div class="session" id="session"></div>
+</header>
+
+<nav id="tabs">
+  <button data-mode="explore">自由弹</button>
+  <button data-mode="hear">听音找位</button>
+  <button data-mode="sing">看位唱音</button>
+  <button data-mode="name">看位说数</button>
+  <button data-mode="findall">看数找位</button>
+  <button data-mode="stats">统计</button>
+</nav>
+
+<main>
+  <section class="card prompt">
+    <div class="prompt-main">
+      <div class="big" id="big"></div>
+      <div class="hint" id="hint"></div>
+    </div>
+    <div class="controls" id="controls"></div>
+  </section>
+
+  <section class="card board-card">
+    <div id="board"></div>
+    <div id="meter" class="meter hidden">
+      <div class="meter-scale"><span>低</span><span>准</span><span>高</span></div>
+      <div class="meter-track"><div class="meter-zone"></div><div class="meter-needle" id="needle"></div></div>
+      <div class="meter-text" id="meterText"></div>
+    </div>
+    <div id="pad" class="pad hidden"></div>
+    <div id="statsView" class="hidden"></div>
+  </section>
+
+  <details class="card settings" id="settings">
+    <summary>设置</summary>
+    <div class="grid">
+      <label>品位范围
+        <span><select id="fretMin"></select> 到 <select id="fretMax"></select> 品</span>
+      </label>
+      <label>练哪几根弦
+        <span id="stringBoxes"></span>
+      </label>
+      <label>位置上显示
+        <select id="labelMode">
+          <option value="none">不显示（纯声音）</option>
+          <option value="number">编号 0～11</option>
+          <option value="syllable">唱名</option>
+          <option value="absolute">绝对编号</option>
+        </select>
+      </label>
+      <label>听音找位 / 看数找位的判定
+        <select id="strict">
+          <option value="1">同一个音高（八度也要对）</option>
+          <option value="0">同一个音级（忽略八度）</option>
+        </select>
+      </label>
+      <label>看位唱音的判定
+        <select id="singStrict">
+          <option value="0">忽略八度（用嗓子唱）</option>
+          <option value="1">八度也要对（用真吉他弹）</option>
+        </select>
+      </label>
+      <label>答对后自动下一题
+        <select id="auto">
+          <option value="1">是</option>
+          <option value="0">否</option>
+        </select>
+      </label>
+      <label>音量
+        <input type="range" id="volume" min="0" max="1" step="0.05">
+      </label>
+    </div>
+    <div class="legend" id="legend"></div>
+  </details>
+</main>
+
+<footer>数据只存在这台设备的浏览器里 · <span id="build"></span></footer>
+<script type="module" src="js/app.js"></script>
+</body>
+</html>
