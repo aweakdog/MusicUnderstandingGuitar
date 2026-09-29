@@ -1,7 +1,8 @@
 """生成十二音圆环图标的 SVG：12 个点围成一圈（0 在正上方，顺时针），do / mi / so（0、4、7）连成大三和弦三角形。
 
 用法：python3 tools/icon_svg.py <variant> > out.svg
-variant：round（网页、圆角方块）、mask（安卓可裁切版，满底色、图案缩进安全区）、mac（macOS 图标，四周留白）
+variant：round（网页、圆角方块）、mask（安卓可裁切版，满底色、图案缩进安全区）、mac（macOS 图标）
+macOS 26 会自己把图标裁成圆角方形；图标本身带圆角或留白的话，会被放在一块白底上，所以 mac 版要画成满底色的正方形。
 """
 import math
 import sys
@@ -11,8 +12,8 @@ TRIAD = (0, 4, 7)
 
 def svg(variant="round"):
     if variant == "mac":
-        bg = '<rect x="5.5" y="5.5" width="53" height="53" rx="12" fill="url(#g)"/>'
-        R, dot, big, sw = 16.5, 2.6, 3.3, 1.9
+        bg = '<rect width="64" height="64" fill="url(#g)"/>'
+        R, dot, big, sw = 18.5, 2.9, 3.6, 2.1
     elif variant == "mask":
         bg = '<rect width="64" height="64" fill="url(#g)"/>'
         R, dot, big, sw = 15.5, 2.5, 3.2, 1.8
